@@ -169,12 +169,16 @@ model.selection.random.forest<-function(models=c("FIM","SST","NS"),nind,director
       pLDA<-predict(rfLDA, target, training = data_rf, ncores = 10, ncores.predict = 10,ntree = ntree)
       cat("...Done.","\n")
       print(pLDA)
-      write.table(paste0(directory,"predictions_LDA.txt"))
+      ppLDA<-cbind(pLDA$vote,pLDA$post.prob);colnames(ppLDA)<-c(colnames(pLDA$vote),"post.prob")
+      write.table(ppLDA,paste0(directory,"/predictions_LDA.txt"))
       cat("\n","\n")
     }
     if(compute_oob==T){
       cat("Out-of-bag error analysis...","\n")
       oob_rfLDA<-err.abcrf(rfLDA,data_rf)
+      pdf(paste0(directory,"/OOB_LDA.pdf"))
+      plot(oob_rfLDA)
+      dev.off()
       cat("...Done.","\n")
       cat("\n")
     }
@@ -191,12 +195,16 @@ model.selection.random.forest<-function(models=c("FIM","SST","NS"),nind,director
       p<-predict(rf, target, training = data_rf, ncores = 10, ncores.predict = 10,ntree = ntree)
       cat("...Done.","\n")
       print(p)
-      write.table(paste0(directory,"predictions.txt"))
+      pp<-cbind(p$vote,p$post.prob);colnames(pp)<-c(colnames(p$vote),"post.prob")
+      write.table(pp,paste0(directory,"/predictions.txt"))
       cat("\n","\n")
     }
     if(compute_oob==T){
       cat("Out-of-bag error analysis...","\n")
       oob_rf<-err.abcrf(rf,data_rf)
+      pdf(paste0(directory,"/OOB.pdf"))
+      plot(oob_rf)
+      dev.off()
       cat("...Done.","\n")
       cat("\n")
     }
@@ -213,12 +221,16 @@ model.selection.random.forest<-function(models=c("FIM","SST","NS"),nind,director
       pLDA<-predict(rfLDA, target, training = data_rf, ncores = 10, ncores.predict = 10,ntree = ntree)
       cat("...Done.","\n")
       print(pLDA)
-      write.table(paste0(directory,"predictions_LDA.txt"))
+      ppLDA<-cbind(pLDA$vote,pLDA$post.prob);colnames(ppLDA)<-c(colnames(pLDA$vote),"post.prob")
+      write.table(ppLDA,paste0(directory,"/predictions_LDA.txt"))
       cat("\n","\n")
     }
     if(compute_oob==T){
       cat("Out-of-bag error analysis...","\n")
       oob_rfLDA<-err.abcrf(rfLDA,data_rf)
+      pdf(paste0(directory,"/OOB_LDA.pdf"))
+      plot(oob_rfLDA)
+      dev.off()
       cat("...Done.","\n")
       cat("\n")
     }
@@ -236,7 +248,8 @@ model.selection.random.forest<-function(models=c("FIM","SST","NS"),nind,director
       p<-predict(rf, target, training = data_rf, ncores = 10, ncores.predict = 10,ntree = ntree)
       cat("...Done.","\n")
       print(p)
-      write.table(paste0(directory,"predictions.txt"))
+      pp<-cbind(p$vote,p$post.prob);colnames(pp)<-c(colnames(p$vote),"post.prob")
+      write.table(pp,paste0(directory,"predictions.txt"))
       cat("\n","\n")
     }
     if(compute_oob==T){
