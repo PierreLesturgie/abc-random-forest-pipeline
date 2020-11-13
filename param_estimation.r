@@ -98,7 +98,7 @@ estimate.plot.RF<-function(data, priors, save=T, dir="",titles_param_plot=NULL,x
     
     d<-c(d,data[1,j])
     temp2<-data[,j]
-    q<-data[,4]/d
+    q<-data[,ncol(data)]/d
     param_estim[[j]]<-cbind(temp2,q);colnames(param_estim[[j]])<-c(colnames(data)[j],"Quantiles")
   }
   names(param_estim)<-colnames(data)[1:(ncol(data)-1)]
