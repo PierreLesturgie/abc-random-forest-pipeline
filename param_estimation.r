@@ -59,7 +59,7 @@ formatting.RF.est<-function(data_prediction, dir,byqtil=1e-4,nval=1000,CI=c(0.02
     }
     est<-data.frame(mode,mediane,ic[,1],ic[,2]);colnames(est)<-c("Mode","Median",CInames[1],CInames[2])
   
-    write.table(file = paste0(dir,"/estimates.txt"),est)
+    write.table(file = paste0(dir,"estimates.txt"),est)
   }
   
   
@@ -215,13 +215,13 @@ param.estimation.random.forest<-function(sumstat=NULL,priors=NULL,target=NULL,ra
   
   if (raw==T){
     cat("==> Loading and computing sumstats...","\n")
-    priors<-read.table(paste0(dir,"/priors.txt"),header=TRUE)
-    sumstat<-read.table(paste0(dir,"/sumstat.txt"))
-    if (ncol(sumstat)!=Nindiv){stop(paste0("sumstat file doesn't correspond to ",Nindiv," individuals folded-SFS"))}
+    priors<-read.table(paste0(dir,"priors.txt"),header=TRUE)
+    sumstat<-read.table(paste0(dir,"sumstat.txt"))[,1:Nindiv]
     sumstat<-cbind(sumstat,apply(sumstat,1,mpd_from_sfs),apply(sumstat,1,sum),apply(sumstat,1,calcola_TD_folded))
-    target<-read.table(paste0(dir,"/target.txt"))
-    if (ncol(target)!=Nindiv){stop(paste0("target file doesn't correspond to a ",Nindiv," individuals folded-SFS"))}
+    target<-read.table(paste0(dir,"target.txt"))[,1:Nindiv]
     target<-cbind(target,apply(target,1,mpd_from_sfs),apply(target,1,sum),apply(target,1,calcola_TD_folded))
+    colnames(sumstat)[(Nindiv+1):(Nindiv+3)]=colnames(target)[(Nindiv+1):(Nindiv+3)]=c("mpd","S","TD")
+    sumstat$TD[which(is.na(sumstat$TD))]<-0
     cat("     Done.","\n")
   }
 
@@ -259,7 +259,7 @@ param.estimation.random.forest<-function(sumstat=NULL,priors=NULL,target=NULL,ra
     
     cat("     >> computing out-of-bag MSE...","\n")
     error[[i]]<-err.regAbcrf(rf,training = data_list[[i]],paral=paral)
-    pdf(paste0(dir,"/OOB_",colnames(priors)[i],".pdf"))
+    pdf(paste0(dir,"OOB_",colnames(priors)[i],".pdf"))
     plot(error[[i]])
     dev.off()
     cat("     Done.","\n","\n")
@@ -277,7 +277,7 @@ param.estimation.random.forest<-function(sumstat=NULL,priors=NULL,target=NULL,ra
     }
     if (densityPlot==T){
       cat("     >> printing abcrf density plot...","\n")
-      pdf(paste0(dir,"/densityPlot_abcrf_",colnames(priors)[i],".pdf"))
+      pdf(paste0(dir,"densityPlot_abcrf_",colnames(priors)[i],".pdf"))
       densityPlot(rf,obs = target,training = data_list[[i]],paral=paral)
       dev.off()
       cat("     Done.","\n","\n")
@@ -303,7 +303,8 @@ param.estimation.random.forest<-function(sumstat=NULL,priors=NULL,target=NULL,ra
   # For confidence intervalle
   est<-param.estimates(df=df,CI=CI)
   
-  write.table(file = paste0(dir,"/estimates.txt"),est)
+  write.table(est,file = paste0(dir,"estimates.txt"))
+  write.table(df,file = paste0(dir,"reg.txt"))
   
   #e<-err.regAbcrf(r.rf_fim_cuv_c, Nm_fim_cuv_c, paral = T)
   
