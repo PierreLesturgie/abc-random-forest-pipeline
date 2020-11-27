@@ -57,7 +57,7 @@ formatting.RF.est<-function(data_prediction, dir,byqtil=1e-4,nval=1000,CI=c(0.02
       temp<-density(df_fin[,i]);mode_temp<-temp$x[which(temp$y==max(temp$y))]
       mode<-c(mode,mode_temp)
     }
-    est<-data.frame(ic[,1],mode,mediane,ic[,2]);colnames(est)<-c(CInames[1],"Mode","Median",CInames[2])
+    est<-data.frame(mode,mediane,ic[,1],ic[,2]);colnames(est)<-c("Mode","Median",CInames[1],CInames[2])
   
     write.table(file = paste0(dir,"/estimates.txt"),est)
   }
@@ -255,7 +255,7 @@ param.estimation.random.forest<-function(sumstat,priors,target,intv_qtil=1e-4,nv
     mode<-c(mode,mode_temp)
   }
   
-  est<-data.frame(ic[,1],mode,mediane,ic[,2]);colnames(est)<-c(CInames[1],"Mode","Median",CInames[2])
+  est<-data.frame(mode,mediane,ic[,1],ic[,2]);colnames(est)<-c("Mode","Median",CInames[1],CInames[2])
   
   write.table(file = paste0(dir,"/estimates.txt"),est)
   
