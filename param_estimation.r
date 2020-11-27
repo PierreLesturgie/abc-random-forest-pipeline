@@ -153,9 +153,13 @@ param.estimates<-function(df,CI=c(0.025,0.975)){
   CInames<-paste0(as.character(CI*100),"%")
   CI<-c(which(df$Quantiles>=CI[1])[1],which(df$Quantiles>=CI[2])[1])
   if(is.na(CI[2])){CI[2]<-nrow(df)}
-  ic<-df[CI,-ncol(df)];rownames(ic)<-CInames
+  ic<-df[CI,-ncol(df)]
+  if (class(ic)!="data.frame"){ic<-as.data.frame(ic)}
+  rownames(ic)<-CInames;colnames(ic)<-colnames(df)[-ncol(df)]
   
-  mediane<-df[which(df$Quantiles==0.5),-ncol(df)];rownames(mediane)<-"median"
+  mediane<-df[which(df$Quantiles==0.5),-ncol(df)]
+  if (class(mediane)!="data.frame"){mediane<-as.data.frame(mediane)}
+  rownames(mediane)<-"median";colnames(mediane)<-colnames(df)[-ncol(df)]
   mode<-c()
   for (i in 1:(ncol(df)-1)){
     temp<-density(df[,i]);mode_temp<-temp$x[which(temp$y==max(temp$y))]
@@ -171,7 +175,9 @@ param.estimates<-function(df,CI=c(0.025,0.975)){
 # >>>>>> function 4 : do the whole estimation from sumstat data 
 
 #       <<< Needs formatting.RF.est() & estimate.plot.RF() >>>
-
+#       IF raw = TRUE : 
+#         <<< Needs functions from Stefano to compute mpd and TD >>>
+#         <<< Needs a folder with sumstats, priors and target >>>
 # ==> Input : 
 #       *** sumstat : data frame w/ sumstat data (SFS + other wanted sumstats)
 #       *** priors : priors corresponding to the sumstat data
@@ -184,6 +190,12 @@ param.estimates<-function(df,CI=c(0.025,0.975)){
 #       *** cross_validation : TRUE for computation of abcRF package implemented cross validation <<< very time consuming >>>
 #       *** densityPlot : TRUE to compute and save the abcRF implemented density plot
 #       *** save_rf : TRUE to save the random forests (only if cross_validation=F) <<< very heavy objects >>>
+#         ==> If raw = TRUE 
+#           *** dir : directory for INPUT and output files
+#             --> sumstat file named "sumstat.txt" << only the folded-SFS >>
+#             --> priors file named "priors.txt"
+#             --> target file named "target.txt" << only the folded-SFS >>
+#           *** Nindiv : number of diploid individuals
 # ==> Output : 
 #       *** print graphs in dir
 #       *** print tables in dir
@@ -196,13 +208,27 @@ param.estimates<-function(df,CI=c(0.025,0.975)){
 #           --> a list of the random forest objects (only if save_rf=T)
 
 
-param.estimation.random.forest<-function(sumstat,priors,target,intv_qtil=1e-4,nval=1000,n_tree=500,CI=c(0.025,0.975),dir="",cross_validation=T,paral=T,densityPlot=T,save_rf=F){
+
+param.estimation.random.forest<-function(sumstat=NULL,priors=NULL,target=NULL,raw=T,Nindiv,intv_qtil=1e-4,nval=1000,n_tree=500,CI=c(0.025,0.975),dir="",cross_validation=T,paral=F,densityPlot=T,save_rf=F){
   
   require(abcrf)
   
+  if (raw==T){
+    cat("==> Loading and computing sumstats...","\n")
+    priors<-read.table(paste0(dir,"/priors.txt"),header=TRUE)
+    sumstat<-read.table(paste0(dir,"/sumstat.txt"))
+    if (ncol(sumstat)!=Nindiv){stop(paste0("sumstat file doesn't correspond to ",Nindiv," individuals folded-SFS"))}
+    sumstat<-cbind(sumstat,apply(sumstat,1,mpd_from_sfs),apply(sumstat,1,sum),apply(sumstat,1,calcola_TD_folded))
+    target<-read.table(paste0(dir,"/target.txt"))
+    if (ncol(target)!=Nindiv){stop(paste0("target file doesn't correspond to a ",Nindiv," individuals folded-SFS"))}
+    target<-cbind(target,apply(target,1,mpd_from_sfs),apply(target,1,sum),apply(target,1,calcola_TD_folded))
+    cat("     Done.","\n")
+  }
+
+
   q<-seq(0, 1, by = intv_qtil)
   q<-as.vector(q)
-  
+  cross_val_output<-c()
   cross_val<-list()
   error<-list()
   data_list<-list()
@@ -241,6 +267,10 @@ param.estimation.random.forest<-function(sumstat,priors,target,intv_qtil=1e-4,nv
     if (cross_validation==T){
       cat("     >> computing cross-validation...","\n")
       cross_val[[i]]<-predictOOB(rf,training = data_list[[i]],paral=paral)
+      temp_cv<-data.frame(cross_val[[i]]$MSE,cross_val[[i]]$NMAE,
+                 cross_val[[i]]$MSE.med,cross_val[[i]]$NMAE.med,cross_val[[i]]$coverage)
+      colnames(temp_cv)<-c("OOB-MS-mean","OOB-NMAE-mean","OOB-MS-median","OOB-NMAE-median","CI-coverage")
+      cross_val_output<-rbind(cross_val_output,temp_cv)
       cat("     Done.","\n","\n")
       
       
@@ -259,7 +289,10 @@ param.estimation.random.forest<-function(sumstat,priors,target,intv_qtil=1e-4,nv
     }
     rm(rf)
   }
-  if (cross_validation==T){names(cross_val)=colnames(priors)}
+  if (cross_validation==T){
+    names(cross_val)=colnames(priors)
+    write.table(cross_val_output,"cross_val.txt")
+  }
   
   names(prediction_list)=names(data_list)=names(error)=colnames(priors)
   
@@ -288,41 +321,12 @@ param.estimation.random.forest<-function(sumstat,priors,target,intv_qtil=1e-4,nv
   
 }
 
-# >>>>>> function 3bis : do the whole estimation from RAW sumstat data (useful for the cluster)
-
-#       <<< Needs formatting.RF.est() & estimate.plot.RF() >>>
-#       <<< Needs functions from Stefano to compute mpd and TD >>>
-#       <<< Needs a folder with sumstats, priors and target >>>
-
-# ==> Input : 
-#       *** dir : directory for INPUT and output files
-#           --> sumstat file named "sumstat.txt" << only the folded-SFS >>
-#           --> priors file named "priors.txt"
-#           --> target file named "target.txt" << only the folded-SFS >>
-#       *** Nindiv : number of diploid individuals
-#       *** intv_qtil : steps between quantiles (for the plots)
-#       *** nval : number of points used to plot the values from the quantiles
-#       *** n_tree : number of trees used to grow the forest
-#       *** CI : bounds of the confidence interval
-#       *** cross_validation : TRUE for computation of abcRF package implemented cross validation <<< very time consuming >>>
-#       *** densityPlot : TRUE to compute and save the abcRF implemented density plot
-# ==> Output : 
-#       *** print graphs in dir
-#       *** print tables in dir
-#       *** returns a list with
-#           --> a list of reference tables built for the random forests
-#           --> a list of estimated values data frames
-#           --> a list of out-of-bag error values according to the number of trees for each forest
-#           --> the formatted dataframe used to plot
-#           --> a list of prediction of the out-of-bag error for each forest (cross-val, only if cross_validation=T)
 
 
-param.estimation.random.forest2<-function(dir="",Nindiv,intv_qtil=1e-4,nval=1000,n_tree=500,CI=c(0.025,0.975),cross_validation=T,paral=F,densityPlot=T){
-  
-  require(abcrf)
-  # We need the functions from stefano to compute mpd + TD. 
 
-  mpd_from_sfs<-function(sfs, folded=TRUE){
+# Function from Stefano!!
+
+mpd_from_sfs<-function(sfs, folded=TRUE){
     ### check if it is folded or not
     if (isTRUE(folded)){n_ind<-2*length(sfs)}
     else {n_ind<-length(sfs)}
@@ -409,114 +413,3 @@ param.estimation.random.forest2<-function(dir="",Nindiv,intv_qtil=1e-4,nval=1000
     TD<-(theta_P-(S/calcola_a1(sample_size)))/(((calcola_e1(sample_size)*S)+(calcola_e2(sample_size)*S*(S-1)))^0.5)
     return(TD)
   }
-
-  cat("==> Loading and computing sumstats...","\n")
-  priors<-read.table(paste0(dir,"/priors.txt"),header=TRUE)
-  sumstat<-read.table(paste0(dir,"/sumstat.txt"))
-  if (ncol(sumstat)!=Nindiv){stop(paste0("sumstat file doesn't correspond to ",Nindiv," individuals folded-SFS"))}
-  sumstat<-cbind(sumstat,apply(sumstat,1,mpd_from_sfs),apply(sumstat,1,sum),apply(sumstat,1,calcola_TD_folded))
-  target<-read.table(paste0(dir,"/target.txt"))
-  if (ncol(target)!=Nindiv){stop(paste0("target file doesn't correspond to a ",Nindiv," individuals folded-SFS"))}
-  target<-cbind(target,apply(target,1,mpd_from_sfs),apply(target,1,sum),apply(target,1,calcola_TD_folded))
-  cat("     Done.","\n")
-
-
-
-  q<-seq(0, 1, by = intv_qtil)
-  q<-as.vector(q)
-  
-  cross_val<-list()
-  error<-list()
-  data_list<-list()
-  prediction_list<-list()
-  stat_table<-c()
-  if (cross_validation==F){
-    if (save_rf==T){rf_list<-list()}
-    }
-  
-  for (i in 1:ncol(priors)){
-    cat("==> Analysis of variable",colnames(priors)[i],"\n")
-    data_list[[i]]<-as.data.frame(cbind(priors[,i],sumstat))
-    colnames(data_list[[i]])[1]<-"Temp"
-    cat("     >> building the random forest...","\n")
-    rf<-regAbcrf(Temp~.,data_list[[i]], ntree = n_tree, paral = paral)
-    cat("     Done.","\n")
-    cat("********* Info random forest on parameter",colnames(priors)[i],":","\n")
-    print(rf)
-    cat("\n","\n")
-    cat("     >> computing estimation...","\n")
-    prediction_list[[i]]<-predict(rf, target,data_list[[i]], 
-                                  paral = paral, quantiles = q)
-    cat("     Done.","\n","\n")
-    stat_temp<-cbind(prediction_list[[i]]$expectation, prediction_list[[i]]$med, prediction_list[[i]]$variance, 
-                     prediction_list[[i]]$variance.cdf, prediction_list[[i]]$post.NMAE.mean)
-    colnames(stat_temp)<-c("mean", "median", "variance", "variance.cdf", "post.NMAE.mean")
-    stat_table<-rbind(stat_table,stat_temp)
-    
-    cat("     >> computing out-of-bag MSE...","\n")
-    error[[i]]<-err.regAbcrf(rf,training = data_list[[i]],paral=paral)
-    pdf(paste0(dir,"/OOB_",colnames(priors)[i],".pdf"))
-    plot(error[[i]])
-    dev.off()
-    cat("     Done.","\n","\n")
-    
-    if (cross_validation==T){
-      cat("     >> computing cross-validation...","\n")
-      cross_val[[i]]<-predictOOB(rf,training = data_list[[i]],paral=paral)
-      cat("     Done.","\n","\n")
-      
-      k
-    }
-    if (densityPlot==T){
-      cat("     >> printing abcrf density plot...","\n")
-      pdf(paste0(dir,"/densityPlot_abcrf_",colnames(priors)[i],".pdf"))
-      densityPlot(rf,obs = target,training = data_list[[i]],paral=paral)
-      dev.off()
-      cat("     Done.","\n","\n")
-    }
-    if (cross_validation==F){
-      if (save_rf==T){
-        rf_list[[i]]<-rf;names(rf_list)[i]<-colnames(priors)[i]
-      } 
-    }
-    rm(rf)
-  }
-  if (cross_validation==T){names(cross_val)=colnames(priors)}
-  
-  names(prediction_list)=names(data_list)=names(error)=colnames(priors)
-  
-  df<-formatting.RF.est(prediction_list,dir = dir,byqtil=intv_qtil,nval=nval,CI=NULL)
-  
-  estimations<-estimate.plot.RF(df,priors,save = T,dir = dir,titles_param_plot = NULL)
-  
-  # For confidence intervalle
-  CInames<-paste0(as.character(CI*100),"%")
-  CI<-c(which(df$Quantiles>=CI[1])[1],which(df$Quantiles>=CI[2])[1])
-  if(is.na(CI[2])){CI[2]<-nrow(df)}
-  ic<-df[CI,]
-  ic<-t(ic)
-  colnames(ic)<-c("2.5%","97.5%")
-  ic<-ic[-nrow(ic),]
-  
-  mediane<-c()
-  mode<-c()
-  for (i in 1:length(prediction_list)){
-    mediane<-c(mediane,prediction_list[[i]]$med)
-    temp<-density(df[,i]);mode_temp<-temp$x[which(temp$y==max(temp$y))]
-    mode<-c(mode,mode_temp)
-  }
-  
-  est<-data.frame(ic[,1],mode,mediane,ic[,2]);colnames(est)<-c(CInames[1],"Mode","Median",CInames[2])
-  
-  write.table(file = paste0(dir,"/estimates.txt"),est)
-  
-  #e<-err.regAbcrf(r.rf_fim_cuv_c, Nm_fim_cuv_c, paral = T)
-  
-  if (cross_validation==F) {
-    fin<-list(data_list,rf_list,est,error,df);names(fin)<-c("ref_table","random_forests","estimated_values","error","reg_df")
-  } else{fin<-list(data_list,est,error,cross_val,df);names(fin)<-c("ref_table","estimated_values","error","cross_validation","reg_df")}
-  
-  
-  return(fin)
-  
-}
