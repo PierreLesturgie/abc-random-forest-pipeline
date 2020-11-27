@@ -138,8 +138,37 @@ estimate.plot.RF<-function(data, priors, save=T, dir="",titles_param_plot=NULL,x
 }
 
 
+# >>>>>> function 3 : outputs the parameter estimates and CI
 
-# >>>>>> function 3 : do the whole estimation from sumstat data 
+#       <<< Needs formatting.RF.est() & estimate.plot.RF() >>>
+
+# ==> Input : 
+#       *** df : data frame of quantiles for all estimates
+#       *** CI : bounds of the confidence interval
+# ==> Output : 
+#       *** data frame of estimates (mode, median, CI)
+
+
+param.estimates<-function(df,CI=c(0.025,0.975)){
+  CInames<-paste0(as.character(CI*100),"%")
+  CI<-c(which(df$Quantiles>=CI[1])[1],which(df$Quantiles>=CI[2])[1])
+  if(is.na(CI[2])){CI[2]<-nrow(df)}
+  ic<-df[CI,-ncol(df)];rownames(ic)<-CInames
+  
+  mediane<-df[which(df$Quantiles==0.5),-ncol(df)];rownames(mediane)<-"median"
+  mode<-c()
+  for (i in 1:(ncol(df)-1)){
+    temp<-density(df[,i]);mode_temp<-temp$x[which(temp$y==max(temp$y))]
+    mode<-c(mode,mode_temp)
+  }
+  mode<-t(as.data.frame(mode));colnames(mode)<-colnames(mediane)
+  est<-rbind(mode,mediane,ic)
+  return(est)
+}
+
+
+
+# >>>>>> function 4 : do the whole estimation from sumstat data 
 
 #       <<< Needs formatting.RF.est() & estimate.plot.RF() >>>
 
@@ -239,23 +268,7 @@ param.estimation.random.forest<-function(sumstat,priors,target,intv_qtil=1e-4,nv
   estimations<-estimate.plot.RF(df,priors,save = T,dir = dir,titles_param_plot = NULL)
   
   # For confidence intervalle
-  CInames<-paste0(as.character(CI*100),"%")
-  CI<-c(which(df$Quantiles>=CI[1])[1],which(df$Quantiles>=CI[2])[1])
-  if(is.na(CI[2])){CI[2]<-nrow(df)}
-  ic<-df[CI,]
-  ic<-t(ic)
-  colnames(ic)<-c("2.5%","97.5%")
-  ic<-ic[-nrow(ic),]
-  
-  mediane<-c()
-  mode<-c()
-  for (i in 1:length(prediction_list)){
-    mediane<-c(mediane,prediction_list[[i]]$med)
-    temp<-density(df[,i]);mode_temp<-temp$x[which(temp$y==max(temp$y))]
-    mode<-c(mode,mode_temp)
-  }
-  
-  est<-data.frame(mode,mediane,ic[,1],ic[,2]);colnames(est)<-c("Mode","Median",CInames[1],CInames[2])
+  est<-param.estimates(df=df,CI=CI)
   
   write.table(file = paste0(dir,"/estimates.txt"),est)
   
