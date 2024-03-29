@@ -3,6 +3,11 @@
 ################################################################
 
 
+## ****** author  = Pierre Lesturgie ****** ##
+## ****** version = 0.1 ****** ##
+## ****** email = pierrelesturgie@outlook.fr ****** ##
+## ****** date = 11.02.2020 ****** ##
+
 #-------function 1 ==> performs the model selection
 
 # >>>>>> function 1 : performs the model selection
