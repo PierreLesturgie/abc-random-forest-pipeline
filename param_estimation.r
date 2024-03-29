@@ -2,6 +2,10 @@
 #------ FUNCTIONS PARAM ESTIMATION W/ RANDOM FORESTS ABC ------#
 ################################################################
 
+## ****** author  = Pierre Lesturgie ****** ##
+## ****** version = 0.1 ****** ##
+## ****** email = pierrelesturgie@outlook.fr ****** ##
+## ****** date = 11.02.2020 ****** ##
 
 #-------function 1 ==> Formatting data in order to compute the abcRF regression : formatting.RF.est()
 
