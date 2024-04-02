@@ -19,7 +19,7 @@ This is a R pipeline to run (and visualize) model selection and parameters estim
 - A folder with sumstats and target
 
 ```
-model.selection.random.forest<(models=c("FIM","SST","NS"),nind,directory=c(""),analysis=c("all"),ntree=500,predictions=T,compute_oob=T,importance_variable=T,subset=NULL,LDA_plot=T)
+model.selection.random.forest<-(models=c("FIM","SST","NS"),nind,directory=c(""),analysis=c("all"),ntree=500,predictions=T,compute_oob=T,importance_variable=T,subset=NULL,LDA_plot=T)
 ```
 
 ### Input : 
@@ -39,9 +39,9 @@ model.selection.random.forest<(models=c("FIM","SST","NS"),nind,directory=c(""),a
 
 
 ## (2) : Sumstat PCA
-
+```
 pcabc(models=c("FIM","SST","NS"),nind,directory=c(""),subset=NULL,pcs=NULL)
-
+```
 ### Input : 
 - models : names of models to compute (only important for loading sumstats and for output files)
 - dir : directory for INPUT and output files. Must include **sumstat** files named *sumstat'model'.txt* (e.g: sumstat_FIM.txt) ***AND*** target summary statistics named **target.txt**
