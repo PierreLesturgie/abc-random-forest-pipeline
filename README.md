@@ -11,9 +11,7 @@
 This is a R pipeline to run (and visualize) model selection and parameters estimation using abcRF package, with additional custom cross validation. 
 
 
-#-------function 1 ==> performs the model selection
-
-## (1) : Model Selection
+## (1) Model Selection
 ### Requirements:
 - functions from Stefano to compute mpd and TD
 - A folder with sumstats and target
@@ -38,7 +36,7 @@ model.selection.random.forest(models=c("FIM","SST","NS"),nind,directory=c(""),an
 
 
 
-## (2) : Sumstat PCA
+## (2) Sumstat PCA
 ```
 pcabc(models=c("FIM","SST","NS"),nind,directory=c(""),subset=NULL,pcs=NULL)
 ```
