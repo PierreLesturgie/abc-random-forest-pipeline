@@ -18,6 +18,7 @@ This is a R pipeline to run (and visualize) model selection and parameters estim
 - functions from Stefano to compute mpd and TD
 - A folder with sumstats and target
 
+    missing
 model.selection.random.forest<(models=c("FIM","SST","NS"),nind,directory=c(""),analysis=c("all"),ntree=500,predictions=T,compute_oob=T,importance_variable=T,subset=NULL,LDA_plot=T)
 
 
