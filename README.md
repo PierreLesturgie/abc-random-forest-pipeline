@@ -27,7 +27,6 @@ A script to run an example and according data is present in the folder "test"
 Performs  model selection from a target + a named list of summary statistics simulated from different scenarios. 
 
 ```
-pca_sumstats = pcabc(target = target, list_sumstat = sumstat_list,directory = "./",pcs = 2)
 
 ms<-model.selection.random.forest(target = target,list_sumstat = sumstat_list,
                                            directory = "./",
@@ -50,16 +49,17 @@ ms<-model.selection.random.forest(target = target,list_sumstat = sumstat_list,
 
 The function returns a list with the confusion matrix and the output of analyses aseked to the function. 
 
+#### Optionally, one can run a PCA with the target and the sumstat, to check consistency between them 
+However, it is also recommended to do the LDA plot in the model.selection.random.forest() in place of the PCA 
 
+```
+pca_sumstats = pcabc(target = target, list_sumstat = sumstat_list,directory = "./",pcs = NULL)
+```
 
-## (2) Sumstat PCA
-```
-pcabc(models=c("FIM","SST","NS"),nind,directory=c(""),subset=NULL,pcs=NULL)
-```
-### Input : 
-- models : names of models to compute (only important for loading sumstats and for output files)
-- dir : directory for INPUT and output files. Must include **sumstat** files named *sumstat'model'.txt* (e.g: sumstat_FIM.txt) ***AND*** target summary statistics named **target.txt**
-- nind : number of individuals
+### List of arguments: 
+- target : observed summary statistics (e.g., SFS, genetic diversity, Tajima's D,...)
+- list_sumstat : Named list of summary statistics obtained from simulated models 
+- dir : directory output files.
 - subset : number of observation to subset each dataframe.
 - pcs : number of pcs (if NULL will be asked) 
 ### Output : 
