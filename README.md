@@ -56,14 +56,13 @@ However, it is also recommended to do the LDA plot in the model.selection.random
 pca_sumstats = pcabc(target = target, list_sumstat = sumstat_list,directory = "./",pcs = NULL)
 ```
 
-### List of arguments: 
+#### List of arguments: 
 - target : observed summary statistics (e.g., SFS, genetic diversity, Tajima's D,...)
 - list_sumstat : Named list of summary statistics obtained from simulated models 
 - dir : directory output files.
 - subset : number of observation to subset each dataframe.
 - pcs : number of pcs (if NULL will be asked) 
-### Output : 
-- write pdf of the pca
-- returns a pca object
+
+Returns a pca object and writes pdf of the pca
 
 
