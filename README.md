@@ -90,7 +90,7 @@ Performs parameter estimation, and optionally cross-validation
 - densityPlot : TRUE to compute and save the abcRF implemented density plot
 - save_rf : TRUE to save the random forests (only if cross_validation=F) <<< very heavy objects >>>
 
-The function returns a list with *reference tables*; *estimated values*; *out-of-bag* error values; formated *dataframe* for plots; *cross-validation* results; and the *random_forest* . Additionally, it writes results and prints graphs in the <dir>. 
+The function returns a list with *reference tables*; *estimated values*; *out-of-bag* error values; formated *dataframe* for plots; *cross-validation* results; and the *random_forest* . Additionally, it writes results and prints graphs in the **dir**.
 
 
 
