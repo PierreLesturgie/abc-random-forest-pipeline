@@ -67,3 +67,30 @@ Returns a pca object and writes pdf of the pca
 
 ## (2) Parameter estimation 
 
+```
+est = param.estimation.random.forest(sumstat = sumstat,priors = priors,target = target, 
+                               dir = "./",n_tree = 500,
+                               cross_validation = T,npods=100,paral=F,write_cv=F)
+```
+
+Performs parameter estimation, and optionally cross-validation
+
+### List of arguments: 
+- sumstat : data frame w/ sumstat data (SFS + other wanted sumstats)
+- priors : priors corresponding to the sumstat data (i.e., the simulated parameters, such as effective size, migration rate, etc.)
+- target : targetted sumstat (need to have exactly the same stats computed than sumstat)
+- intv_qtil : steps between quantiles (for the plots)
+- nval : number of points used to plot the values from the quantiles
+- n_tree : number of trees used to grow the forest
+- CI : bounds of the confidence interval
+- dir : directory for output files
+- cross_validation : TRUE for computation of cross-validation
+- npods = number of Pseudo-Observed-Datasets sampled for cross-validation
+- predict_OOB_CV : computation of abcRF package implemented cross validation <<< very time consuming >>>
+- densityPlot : TRUE to compute and save the abcRF implemented density plot
+- save_rf : TRUE to save the random forests (only if cross_validation=F) <<< very heavy objects >>>
+
+The function returns a list with *reference tables*; *estimated values*; *out-of-bag* error values; formated *dataframe* for plots; *cross-validation* results; and the *random_forest* . Additionally, it writes results and prints graphs in the <dir>. 
+
+
+
