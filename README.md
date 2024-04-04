@@ -1,10 +1,10 @@
 # ABC with Random Forest pipeline 
 --- 
 
-## R pipeline to run (and visualize) model selection and parameters estimation using abcRF package, with additional custom cross validation. 
+### R pipeline to run (and visualize) model selection and parameters estimation using abcRF package, with additional custom cross validation. 
 ####  Author  = Pierre Lesturgie 
 
-### Please contact the author (pierrelesturgie@outlook.fr) before using and sharing
+#### Please contact the author (pierrelesturgie@outlook.fr) before using and sharing
 
 This pipeline was first used and developped for the following (but updated in 04/2024): 
 
