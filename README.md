@@ -2,9 +2,7 @@
 --- 
 
 ### R pipeline to run (and visualize) model selection and parameters estimation using abcRF package, with additional custom cross validation. 
-####  Author  = Pierre Lesturgie 
-
-#### Please contact the author (pierrelesturgie@outlook.fr) before using and sharing
+####  Author: Pierre Lesturgie. Please contact (pierrelesturgie@outlook.fr) before using and sharing. 
 
 This pipeline was first used and developped for the following (but updated in 04/2024): 
 
