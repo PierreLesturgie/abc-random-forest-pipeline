@@ -10,6 +10,16 @@
 
 This is a R pipeline to run (and visualize) model selection and parameters estimation using abcRF package, with additional custom cross validation. 
 
+It has been used in 
+
+Lesturgie, P., Planes, S., & Mona, S. (2022). Coalescence times, life history traits and conservation concerns: An example from four coastal shark species from the Indo‐Pacific. *Molecular Ecology Resources*, 22(2), 554–566. https://doi.org/10.1111/1755-0998.13487
+
+Lesturgie, P., Lainé, H., Suwalski, A., Chifflet-Belle, P., Maisano Delser, P., Clua, E., Jaquemet, S., Magalon, H., & Mona, S. (2022). Ecological and biogeographic features shaped the complex evolutionary history of an iconic apex predator (*Galeocerdo cuvier*). *BMC Ecology and Evolution*, 22(1), 147. https://doi.org/10.1186/s12862-022-02100-y
+
+Lesturgie, P., Braun, C. D., Clua, E., Mourier, J., Thorrold, S. R., Vignaud, T., Planes, S., & Mona, S. (2023). Like a rolling stone: Colonization and migration dynamics of the gray reef shark (*Carcharhinus amblyrhynchos*). *Ecology and Evolution*, 13(1), 1–15. https://doi.org/10.1002/ece3.9746
+ 
+
+
 
 ## (1) Model Selection
 ### Requirements:
