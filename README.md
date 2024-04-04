@@ -14,29 +14,41 @@ Lesturgie, P., Braun, C. D., Clua, E., Mourier, J., Thorrold, S. R., Vignaud, T.
 
 ---
 
+The pipeline performs model selection and parameter estimation using an Approximate Bayesian Computation with random forests approach. 
+It consists in two steps: 
+
+1. Model selection: estimating which model best fits the observed data (using a classification algorithm)
+2. Parameter estimation: parameter estimates (mean, median, mode, CI) under a specific model (using a regression algorithm). 
+
+A script to run an example and according data is present in the folder "test"
 
 ## (1) Model Selection
-### Requirements:
-- functions from Stefano to compute mpd and TD
-- A folder with sumstats and target
+
+Performs  model selection from a target + a named list of summary statistics simulated from different scenarios. 
 
 ```
-model.selection.random.forest(models=c("FIM","SST","NS"),nind,directory=c(""),analysis=c("all"),ntree=500,predictions=T,compute_oob=T,importance_variable=T,subset=NULL,LDA_plot=T)
+pca_sumstats = pcabc(target = target, list_sumstat = sumstat_list,directory = "./",pcs = 2)
+
+ms<-model.selection.random.forest(target = target,list_sumstat = sumstat_list,
+                                           directory = "./",
+                                           analysis = "all",ntree = 500,predictions = T,compute_oob = F,
+                                           importance_variable = F,subset=NULL,LDA_plot=T,paral = F)
 ```
 
-### Input : 
-- models : names of models to compute (only important for loading sumstats and for output files)
-- dir : directory for INPUT and output files. Must include **sumstat** files named *sumstat'model'.txt* (e.g: sumstat_FIM.txt) ***AND*** target summary statistics named **target.txt**
-- nind : number of individuals
-- analysis : "LDA", "basic" or "all", to compute only the model selection with a linear discriminant analysis, without, or both.
+### List of arguments: 
+- target : observed summary statistics (e.g., SFS, genetic diversity, Tajima's D,...)
+- list_sumstat : Named list of summary statistics obtained from simulated models 
+- dir : directory output files.
+- analysis : "LDA", "basic" or "all", to compute the ms adding linear discriminant analysis axes as sumstat, without, or both. 
 - ntree : number of trees used to grow the forest
 - predictions : does the function computes model choice (or only grows forest) ?
 - compute_oob : does the function computes the evolution of out-of-bag error with the number of trees ?
 - importance_variable : does the function tests the importance of the variables in the decision ?
 - subset : number of observation to subset each dataframe.
 - LDA_plot : does the function computes the LDA plot (very similar to a pca)
-### Output : 
-- returns a list with the confusion matrix and the output of analyses aseked to the function. 
+- Paral : to parallelize using ncores - 1 
+
+The function returns a list with the confusion matrix and the output of analyses aseked to the function. 
 
 
 
