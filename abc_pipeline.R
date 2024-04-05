@@ -247,11 +247,9 @@ model.selection.random.forest<-function(target, list_sumstat,directory=c(""),ana
 # performs a PCA with simulated and target summary statistics 
 
 # ==> Input : 
-#       *** models : names of models to compute (only important for loading sumstats and for output files)
-#       *** dir : directory for INPUT and output files
-#           --> sumstat files named "sumstat'model'.txt" (ex sumstat_FIM.txt) << only the folded-SFS >>
-#           --> target file named "target.txt" << only the folded-SFS >>
-#       *** nind : number of individuals
+#       *** target : observed summary statistics
+#       *** list_sumstat : Named list of summary statistics computed from simulated models
+#       *** dir : directory for output files
 #       *** subset : number of observation to subset each dataframe. 
 #       *** pcs : number of pcs (if NULL will be asked) 
 # ==> Output : 
