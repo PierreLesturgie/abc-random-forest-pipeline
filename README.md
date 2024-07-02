@@ -4,7 +4,7 @@
 ### R pipeline to run (and visualize) model selection and parameters estimation using abcRF package, with additional custom cross validation. 
 ####  Author: Pierre Lesturgie. Please contact (pierrelesturgie@outlook.fr) before using and sharing. 
 
-This pipeline is built around some functions of the abcRF R package and was first used and developped for the following (but updated in 04/2024): 
+This pipeline is built around some functions of the abcRF R package and was first used and made for the following (but updated in 04/2024): 
 
 Lesturgie, P., Planes, S., & Mona, S. (2022). Coalescence times, life history traits and conservation concerns: An example from four coastal shark species from the Indo‐Pacific. *Molecular Ecology Resources*, 22(2), 554–566. https://doi.org/10.1111/1755-0998.13487
 
